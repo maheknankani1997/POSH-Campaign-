@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Razorpay POSH Campaign — Plan A / Plan B</title>
+<style>
+:root {
+  --navy:#07245d; --blue:#0d5be1; --electric:#1677ff; --cyan:#40d5ff;
+  --ink:#102a56; --muted:#637697; --bg:#f5f8ff; --card:#ffffff;
+  --line:#dbe6f7; --soft:#eaf3ff; --green:#32c98f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#061d4b,#072a69);color:white;padding:24px 16px;display:flex;flex-direction:column;gap:18px}
+.brand{font-weight:850;font-size:22px;letter-spacing:-.6px}
+.brand span{color:var(--cyan)}
+.nav{display:grid;gap:7px}
+.nav button{border:0;background:transparent;color:#d9e6ff;text-align:left;padding:11px 12px;border-radius:10px;cursor:pointer}
+.nav button:hover,.nav button.active{background:#0f4cb8;color:#fff}
+.smallnote{margin-top:auto;font-size:11px;line-height:1.45;color:#aac6f9}
+.main{min-width:0}
+.hero{padding:44px 48px 34px;background:
+ radial-gradient(circle at 82% 10%,rgba(64,213,255,.22),transparent 25%),
+ linear-gradient(120deg,#06245d,#0b59df 65%,#0a78ef);color:white}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#9ee9ff;font-weight:800}
+.hero h1{font-size:52px;line-height:1.02;letter-spacing:-2.5px;margin:12px 0 12px;max-width:780px}
+.hero h1 em{color:#63ddff;font-style:normal}
+.hero p{max-width:760px;font-size:17px;line-height:1.55;color:#e1ecff;margin:0}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.tag{padding:8px 11px;border:1px solid rgba(255,255,255,.24);background:rgba(255,255,255,.08);border-radius:999px;font-size:12px}
+.section{padding:36px 48px}
+.section h2{font-size:30px;letter-spacing:-1px;margin:0 0 8px}
+.section .lead{color:var(--muted);max-width:850px;line-height:1.55;margin:0 0 22px}
+.grid{display:grid;gap:14px}
+.grid.cols3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid.cols2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(14,54,112,.05)}
+.card h3{margin:0 0 8px;font-size:17px}
+.card p{margin:0;color:var(--muted);line-height:1.5;font-size:13px}
+.kpi{font-size:30px;font-weight:850;color:var(--navy);letter-spacing:-1px}
+.kpi span{color:var(--electric)}
+.plan-switch{display:inline-flex;padding:4px;background:#e7effd;border-radius:12px;gap:4px;margin:8px 0 18px}
+.plan-switch button{border:0;border-radius:9px;padding:9px 15px;background:transparent;color:#496487;font-weight:750;cursor:pointer}
+.plan-switch button.active{background:white;color:var(--navy);box-shadow:0 3px 10px rgba(14,54,112,.12)}
+.planpanel{display:none}
+.planpanel.active{display:block}
+.ribbon{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;background:linear-gradient(100deg,#0c4ec2,#1177f0);color:#fff;border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.ribbon .big{font-weight:850;font-size:24px;letter-spacing:-.8px}
+.ribbon .sub{font-size:12px;color:#d8eaff;margin-top:4px}
+.timeline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.step{background:#fff;border:1px solid var(--line);border-top:4px solid var(--electric);border-radius:13px;padding:14px;min-height:130px}
+.step .day{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:#55739d;font-weight:800}
+.step h4{margin:7px 0 6px;font-size:14px}
+.step p{font-size:12px;line-height:1.42;color:var(--muted);margin:0}
+.channelrow{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.channelrow:first-child{border-top:0}
+.channelname{font-weight:780}
+.pills{display:flex;gap:7px;flex-wrap:wrap}
+.pill{font-size:11px;background:var(--soft);color:#23508e;border-radius:999px;padding:7px 9px}
+.comparison{overflow:auto}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+th,td{padding:13px 14px;text-align:left;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top}
+th{background:#edf4ff;color:#274a80;font-size:11px;text-transform:uppercase;letter-spacing:.8px}
+tr:last-child td{border-bottom:0}
+.creatives{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.creative{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:.18s}
+.creative:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(14,54,112,.11)}
+.creative img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;background:#0b56d8}
+.creative .meta{padding:13px 14px}
+.creative .meta strong{display:block;font-size:14px;margin-bottom:4px}
+.creative .meta span{font-size:12px;color:var(--muted)}
+.hub{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;align-items:start}
+.hub-preview{background:linear-gradient(145deg,#082c74,#126ce8);color:white;border-radius:18px;padding:22px;min-height:380px}
+.loginmock{background:#fff;color:var(--ink);border-radius:15px;padding:18px;margin-top:16px}
+.emailbox{border:1px solid var(--line);border-radius:10px;padding:12px;color:#7d8ea9;margin:12px 0 9px}
+.primary{border:0;background:var(--navy);color:#fff;border-radius:10px;padding:11px 14px;font-weight:800;cursor:pointer}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.option{border:1px solid var(--line);background:#fff;border-radius:12px;padding:13px;cursor:pointer;text-align:left;color:var(--ink)}
+.option:hover{border-color:#81b7ff;background:#f7fbff}
+.option b{display:block;font-size:13px}
+.option span{font-size:11px;color:var(--muted)}
+.ai{position:relative;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}
+.chatbubble{background:#eff5ff;border-radius:14px;padding:11px 12px;margin:8px 0;font-size:12px;color:#39587f}
+.chatbubble.user{background:#0f5edf;color:white;margin-left:40px}
+.channels{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.channelcard{border:1px solid var(--line);background:#fff;border-radius:14px;padding:15px;min-height:150px}
+.channelcard b{display:block;margin-bottom:7px}
+.channelcard span{font-size:12px;color:var(--muted);line-height:1.45}
+.env-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.env{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px}
+.env .place{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:#53739f;font-weight:850}
+.env .copy{font-size:20px;font-weight:830;letter-spacing:-.5px;margin:8px 0}
+.env .why{font-size:12px;color:var(--muted)}
+.modal{position:fixed;inset:0;background:rgba(2,12,35,.78);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
+.modal.open{display:flex}
+.modalbox{max-width:1120px;width:100%;background:#091f50;border-radius:16px;overflow:hidden;position:relative}
+.modalbox img{width:100%;display:block}
+.close{position:absolute;top:12px;right:12px;border:0;background:rgba(0,0,0,.55);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:22px}
+.footer{padding:22px 48px 40px;color:#6f809a;font-size:11px}
+@media (max-width:1000px){
+  .shell{grid-template-columns:1fr} .sidebar{position:relative;height:auto} .nav{grid-template-columns:repeat(3,1fr)}
+  .smallnote{display:none} .hero,.section{padding-left:22px;padding-right:22px}
+  .hero h1{font-size:42px} .timeline{grid-template-columns:1fr 1fr} .channels{grid-template-columns:1fr 1fr}
+  .hub{grid-template-columns:1fr} .creatives{grid-template-columns:1fr} .grid.cols3{grid-template-columns:1fr}
+}
+@media (max-width:650px){
+  .nav{grid-template-columns:1fr 1fr} .hero h1{font-size:36px} .timeline,.channels,.grid.cols2,.options,.env-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">Razorpay <span>POSH</span></div>
+    <div class="nav">
+      <button class="active" data-go="overview">Overview</button>
+      <button data-go="plans">Plan A / Plan B</button>
+      <button data-go="creatives">Creatives</button>
+      <button data-go="hub">Open Door</button>
+      <button data-go="channels">Channels</button>
+      <button data-go="spaces">Physical Spaces</button>
+    </div>
+    <div class="smallnote">Working comms plan · Tentative launch window: 21–30 Nov 2026</div>
+  </aside>
+
+  <main class="main">
+    <header class="hero" id="overview">
+      <div class="eyebrow">Workplace awareness + support ecosystem</div>
+      <h1>If It Feels Off.<br><em>Recognise it. Know where to start.</em></h1>
+      <p>A campaign designed to make subtle workplace discomfort easier to recognise — and support easier to access. The creative work opens the conversation; <b>Open Door</b> gives employees a clear next step.</p>
+      <div class="hero-tags">
+        <div class="tag">Razorpay employees only</div>
+        <div class="tag">Advertising-first visual system</div>
+        <div class="tag">Resource Hub built on Lovable</div>
+        <div class="tag">Two execution options</div>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="grid cols3">
+        <div class="card"><div class="kpi">01</div><h3>What are we saying?</h3><p>You do not need to know exactly what to call an uncomfortable interaction before seeking guidance. Notice the feeling, understand your options, and reach out.</p></div>
+        <div class="card"><div class="kpi">02</div><h3>What will we cover?</h3><p>Digital boundaries, proximity, power and intimidation, emotional impact, allyship, policy awareness, IC visibility and support routes.</p></div>
+        <div class="card"><div class="kpi">03</div><h3>How will it show up?</h3><p>TV screens, Slack, email, washrooms, coffee/pantry spaces and a QR-led journey into Open Door.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="plans">
+      <h2>Two ways to run the same campaign</h2>
+      <p class="lead">The creative system and Resource Hub remain the same. The decision is whether we create one concentrated moment or build a year-long rhythm.</p>
+      <div class="plan-switch">
+        <button class="active" data-plan="a">Plan A · 2-week burst</button>
+        <button data-plan="b">Plan B · Always-on year</button>
+      </div>
+
+      <div id="plan-a" class="planpanel active">
+        <div class="ribbon">
+          <div><div class="big">Plan A · 21–30 Nov</div><div class="sub">A concentrated 10-day burst across two working weeks</div></div>
+          <div class="sub">Awareness → Recognition → Support → Action</div>
+        </div>
+        <div class="timeline">
+          <div class="step"><div class="day">21 Nov</div><h4>Launch</h4><p>Campaign reveal + Open Door goes live. Slack, email and TV drive the first wave.</p></div>
+          <div class="step"><div class="day">22–23 Nov</div><h4>Recognise</h4><p>Digital boundaries and proximity creatives across screens and physical spaces.</p></div>
+          <div class="step"><div class="day">24–26 Nov</div><h4>Understand</h4><p>Power, intimidation and emotional-impact creatives. Scenario-led Slack content.</p></div>
+          <div class="step"><div class="day">27–28 Nov</div><h4>Find support</h4><p>Meet your IC, HRBP and skip-level options. Open Door walkthrough.</p></div>
+          <div class="step"><div class="day">29–30 Nov</div><h4>Act</h4><p>Allyship, what happens next, final QR push and support reminder.</p></div>
+        </div>
+      </div>
+
+      <div id="plan-b" class="planpanel">
+        <div class="ribbon">
+          <div><div class="big">Plan B · Launch in Nov, stay visible all year</div><div class="sub">Open Door launches in the same 21–30 Nov window</div></div>
+          <div class="sub">2 comms every month · 1 awareness + 1 action</div>
+        </div>
+        <div class="grid cols2">
+          <div class="card"><h3>Monthly Awareness</h3><p>One high-impact creative or scenario each month: digital boundaries, proximity, power, jokes, work travel, bystander cues, repeated attention, manager dynamics and more.</p></div>
+          <div class="card"><h3>Monthly Action</h3><p>One action-led communication each month: meet an IC member, speak to HRBP, use Open Door AI, understand reporting, allyship, manager guidance, policy myth-busting or support routes.</p></div>
+        </div>
+        <div class="comparison" style="margin-top:14px">
+          <table>
+            <thead><tr><th>Rhythm</th><th>What employees see</th><th>Role of Open Door</th></tr></thead>
+            <tbody>
+              <tr><td>Launch month</td><td>Campaign identity + 2 hero creatives + Resource Hub</td><td>Primary destination from day one</td></tr>
+              <tr><td>Every month</td><td>1 awareness creative + 1 action/support comm</td><td>Always-on reference point</td></tr>
+              <tr><td>Across the year</td><td>New visual metaphors, new situations, recurring IC/HRBP visibility</td><td>Content grows with new FAQs and approved scenarios</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="comparison" style="margin-top:16px">
+        <table>
+          <thead><tr><th></th><th>Plan A</th><th>Plan B</th></tr></thead>
+          <tbody>
+            <tr><td><b>Strength</b></td><td>High visibility and concentrated recall</td><td>Sustained awareness and behaviour reinforcement</td></tr>
+            <tr><td><b>Cadence</b></td><td>Multiple touchpoints within 21–30 Nov</td><td>Launch in Nov, then two comms every month</td></tr>
+            <tr><td><b>Resource Hub</b></td><td>Launches on Day 1</td><td>Launches on Day 1 and stays central year-round</td></tr>
+            <tr><td><b>Creative model</b></td><td>4–6 hero creatives in one burst</td><td>Creative library expands throughout the year</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="creatives">
+      <h2>Creative system</h2>
+      <p class="lead">Familiar moments, one strong visual idea, minimal copy. The message is recognisable as workplace safety and POSH without relying on policy-heavy language.</p>
+      <div class="creatives">
+        <div class="creative" data-img="assets/workplace-boundaries-beyond-hours.webp">
+          <img src="assets/workplace-boundaries-beyond-hours.webp" alt="Workplace Boundaries Beyond Hours">
+          <div class="meta"><strong>Workplace Boundaries Beyond Hours</strong><span>Digital boundaries · after-hours messaging</span></div>
+        </div>
+        <div class="creative" data-img="assets/proximity-isnt-always-professional.webp">
+          <img src="assets/proximity-isnt-always-professional.webp" alt="Proximity Isn't Always Professional">
+          <div class="meta"><strong>Proximity Isn't Always Professional</strong><span>Personal space · work-related settings beyond the office</span></div>
+        </div>
+        <div class="creative" data-img="assets/when-shadows-intimidate.webp">
+          <img src="assets/when-shadows-intimidate.webp" alt="When Shadows Intimidate">
+          <div class="meta"><strong>When Shadows Intimidate</strong><span>Power dynamics · intimidation</span></div>
+        </div>
+        <div class="creative" data-img="assets/if-it-feels-heavier.webp">
+          <img src="assets/if-it-feels-heavier.webp" alt="If It Feels Heavier Than It Should">
+          <div class="meta"><strong>If It Feels Heavier Than It Should</strong><span>Emotional impact · reaching out</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="hub">
+      <h2>Open Door · POSH Resource Hub</h2>
+      <p class="lead">Built on Lovable and restricted to verified Razorpay employees. The campaign creates the question; Open Door makes the next step obvious.</p>
+      <div class="hub">
+        <div class="hub-preview">
+          <div class="eyebrow">Razorpay employees only</div>
+          <h3 style="font-size:30px;margin:8px 0 2px">A safe place to start.</h3>
+          <p style="color:#dbe9ff;font-size:13px">Verified @razorpay.com access. In production, use approved authentication rather than domain text alone.</p>
+          <div class="loginmock">
+            <b>Not sure where to begin?</b>
+            <p style="font-size:12px;color:#647799;margin:4px 0 10px">Choose what you need right now.</p>
+            <div class="options">
+              <button class="option"><b>Speak to my IC member</b><span>See the IC mapped to your verified email</span></button>
+              <button class="option"><b>Speak to my HRBP</b><span>Find guidance and the right support route</span></button>
+              <button class="option"><b>Connect with my skip-level</b><span>Find an alternate leadership support route</span></button>
+              <button class="option"><b>Read the POSH policy</b><span>Policy, FAQs and reporting information</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai">
+          <div class="eyebrow" style="color:#1780e8">Open Door AI</div>
+          <h3 style="font-size:24px;margin:7px 0">Ask without hunting through a PDF.</h3>
+          <p style="color:var(--muted);font-size:13px">An informational assistant grounded in approved Razorpay POSH policy, FAQs and reviewed scenarios.</p>
+          <div class="chatbubble user">Does POSH apply after an office party?</div>
+          <div class="chatbubble">I can help explain what Razorpay's policy says about work-related settings and point you to the relevant section.</div>
+          <div class="chatbubble user">What if I am not sure I want to report?</div>
+          <div class="chatbubble">You can first understand your options or speak to the appropriate support contact. Asking a question is not the same as filing a formal complaint.</div>
+          <p style="font-size:11px;color:#7c8da7;margin:10px 0 0">AI is informational only — not an investigation or complaint channel.</p>
+        </div>
+      </div>
+
+      <div class="grid cols3" style="margin-top:14px">
+        <div class="card"><h3>Personalised people</h3><p>Employee email maps securely to the right IC member, HRBP and approved skip-level support route.</p></div>
+        <div class="card"><h3>Real situations</h3><p>Approved scenarios help employees understand context, policy and available next steps without over-legalising the experience.</p></div>
+        <div class="card"><h3>One place to return to</h3><p>Policy, FAQs, IC directory, reporting journey, manager resources and all campaign creatives stay accessible year-round.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="channels">
+      <h2>Comms plan by medium</h2>
+      <p class="lead">Each medium has a different job. The campaign should not feel like one launch email repeated five times.</p>
+      <div class="channels">
+        <div class="channelcard"><b>Slack</b><span>Launch, scenarios, short prompts, IC/HRBP spotlights and action reminders.</span></div>
+        <div class="channelcard"><b>Email</b><span>Campaign launch, Open Door introduction, reporting/support information and key recaps.</span></div>
+        <div class="channelcard"><b>TV Screens</b><span>Hero creatives, rotating visual metaphors and strong QR-led calls to action.</span></div>
+        <div class="channelcard"><b>Washrooms</b><span>More private, reassurance-led messaging around discomfort, confidentiality and reaching out.</span></div>
+        <div class="channelcard"><b>Coffee / Pantry</b><span>Relatable conversation-led posters and moments that make employees stop and think.</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="spaces">
+      <h2>Physical-space poster ideas</h2>
+      <p class="lead">Keep the same blue visual identity and oversized-object language, but adapt the message to the environment.</p>
+      <div class="env-grid">
+        <div class="env">
+          <div class="place">Washroom</div>
+          <div class="copy">You don't need to know what to call it to ask about it.</div>
+          <div class="why">Quiet, private placement. QR → Find Support / Open Door.</div>
+        </div>
+        <div class="env">
+          <div class="place">Washroom</div>
+          <div class="copy">If it stayed with you after the conversation ended, talk to someone.</div>
+          <div class="why">Reassurance-led. Avoids pushing employees straight into formal reporting.</div>
+        </div>
+        <div class="env">
+          <div class="place">Coffee / Pantry</div>
+          <div class="copy">Some comments leave a longer aftertaste than coffee.</div>
+          <div class="why">Use a giant cup / spill visual. QR → real workplace situations.</div>
+        </div>
+        <div class="env">
+          <div class="place">Coffee / Pantry</div>
+          <div class="copy">If the joke only works when someone is uncomfortable, it doesn't work.</div>
+          <div class="why">Conversation-led awareness without policy jargon.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="card" style="background:linear-gradient(115deg,#08245d,#0c5ee0);color:white;border:0">
+        <div class="eyebrow">The common thread</div>
+        <h2 style="margin-top:8px;color:white">The campaign gets people thinking. Open Door helps them take the next step.</h2>
+        <p style="color:#dfeaff;max-width:900px">Plan A creates one concentrated moment. Plan B builds a year-long habit. In both options, the employee experience, creative identity and support destination remain consistent.</p>
+      </div>
+    </section>
+
+    <div class="footer">Working proposal · Dates and support routes are tentative. IC/HRBP/skip-level mapping, policy content, authentication and AI data handling must use approved Razorpay sources and controls before launch.</div>
+  </main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalbox"><button class="close" id="close">×</button><img id="modalimg" alt=""></div>
+</div>
+
+<script>
+const navButtons = document.querySelectorAll('.nav button');
+navButtons.forEach(btn => btn.addEventListener('click', () => {
+  navButtons.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(btn.dataset.go).scrollIntoView({behavior:'smooth',block:'start'});
+}));
+
+const planButtons = document.querySelectorAll('.plan-switch button');
+planButtons.forEach(btn => btn.addEventListener('click', () => {
+  planButtons.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.planpanel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('plan-'+btn.dataset.plan).classList.add('active');
+}));
+
+const modal = document.getElementById('modal'), modalimg = document.getElementById('modalimg');
+document.querySelectorAll('.creative').forEach(c => c.addEventListener('click', () => {
+  modalimg.src = c.dataset.img; modal.classList.add('open');
+}));
+document.getElementById('close').addEventListener('click',()=>modal.classList.remove('open'));
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
+
+document.querySelectorAll('.option').forEach(o=>o.addEventListener('click',()=>{
+  const old = o.querySelector('.selected');
+  document.querySelectorAll('.option').forEach(x=>x.style.borderColor='var(--line)');
+  o.style.borderColor='#1677ff';
+}));
+</script>
+</body>
+</html>
